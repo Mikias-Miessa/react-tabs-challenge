@@ -1,11 +1,18 @@
-import { useState } from 'react';
-
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getText } from '../state/tabSlice';
 const Tabs = () => {
-  const [activeTab, setActiveTab] = useState(1);
+  const dispatch = useDispatch();
 
+  const [activeTab, setActiveTab] = useState(1);
+  const { text } = useSelector((state) => state.tabs);
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
+
+  useEffect(() => {
+    dispatch(getText());
+  }, [activeTab]);
 
   return (
     <div className='flex justify-center flex-col md:w-[80%] w-full'>
@@ -54,44 +61,46 @@ const Tabs = () => {
       </div>
 
       {/* Tab content */}
-      <div className='p-4 bg-white'>
-        {activeTab === 1 && (
-          <div className='max-w-full md:max-w-4xl mx-auto flex-col flex md:gap-6 gap-3 my-4 px-4'>
-            <h2 className='text-xl font-bold'>Title 1</h2>
-            <p className='mt-4 text-black break-words font-light'>
-              In sint do non adipisicing incididunt excepteur sit. Voluptate
-              esse aliqua pariatur dolor ex occaecat sunt eu. Pariatur ullamco
-              id dolore sint proident sint nostrud nisi sit id est. Duis et
-              excepteur cupidatat sint nisi dolore qui irure qui in id excepteur
-              irure laboris.
-            </p>
-          </div>
-        )}
-        {activeTab === 2 && (
-          <div className='max-w-full md:max-w-4xl mx-auto flex-col flex gap-6 my-4 px-4'>
-            <h2 className='text-xl font-bold'>Title 2</h2>
-            <p className='mt-4 text-black break-words font-light'>
-              This is the content for Tab 2. Customize this content as needed.
-            </p>
-          </div>
-        )}
-        {activeTab === 3 && (
-          <div className='max-w-full md:max-w-4xl mx-auto flex-col flex gap-6 my-4 px-4'>
-            <h2 className='text-xl font-bold'>Title 3</h2>
-            <p className='mt-4 text-black break-words font-light'>
-              This is the content for Tab 3. Customize this content as needed.
-            </p>
-          </div>
-        )}
-        {activeTab === 4 && (
-          <div className='max-w-full md:max-w-4xl mx-auto flex-col flex gap-6 my-4 px-4'>
-            <h2 className='text-xl font-bold'>Title 4</h2>
-            <p className='mt-4 text-black break-words font-light'>
-              This is the content for Tab 4. Customize this content as needed.
-            </p>
-          </div>
-        )}
-      </div>
+      {text !== null && (
+        <div className='p-4 bg-white'>
+          {activeTab === 1 && (
+            <div className='max-w-full md:max-w-4xl mx-auto flex-col flex md:gap-6 gap-3 my-4 px-4'>
+              <h2 className='text-xl font-bold'>Title 1</h2>
+              <div
+                className='mt-4 text-black break-words font-light'
+                dangerouslySetInnerHTML={{ __html: text }}
+              ></div>
+            </div>
+          )}
+          {activeTab === 2 && (
+            <div className='max-w-full md:max-w-4xl mx-auto flex-col flex gap-6 my-4 px-4'>
+              <h2 className='text-xl font-bold'>Title 2</h2>
+              <div
+                className='mt-4 text-black break-words font-light'
+                dangerouslySetInnerHTML={{ __html: text }}
+              ></div>
+            </div>
+          )}
+          {activeTab === 3 && (
+            <div className='max-w-full md:max-w-4xl mx-auto flex-col flex gap-6 my-4 px-4'>
+              <h2 className='text-xl font-bold'>Title 3</h2>
+              <div
+                className='mt-4 text-black break-words font-light'
+                dangerouslySetInnerHTML={{ __html: text }}
+              ></div>
+            </div>
+          )}
+          {activeTab === 4 && (
+            <div className='max-w-full md:max-w-4xl mx-auto flex-col flex gap-6 my-4 px-4'>
+              <h2 className='text-xl font-bold'>Title 4</h2>
+              <div
+                className='mt-4 text-black break-words font-light'
+                dangerouslySetInnerHTML={{ __html: text }}
+              ></div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
