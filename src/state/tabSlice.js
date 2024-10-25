@@ -1,16 +1,25 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// const baseUrl = 'https://loripsum.net/api';
-
 const initialState = {
   loading: false,
-  text: null,
+  textData: {},
   getTextStatus: 'idle',
 };
 
+// Async thunk to fetch text data
 export const getText = createAsyncThunk(
   'tabSlice/getText',
-  async (_, thunkAPI) => {
+  async (tabIndex, thunkAPI) => {
+    const cacheKey = `cachedTabTextData_Tab${tabIndex}`;
+    const cachedData = localStorage.getItem(cacheKey);
+
+    // Check for cached data
+    if (cachedData) {
+      // If cached data exists, return it
+      return { tabIndex, data: cachedData };
+    }
+
+    // If no cache, fetch new data
     try {
       const response = await fetch('https://loripsum.net/api/1/short', {
         method: 'GET',
@@ -21,23 +30,20 @@ export const getText = createAsyncThunk(
       }
 
       const data = await response.text(); // .text() for plain text response
-
-      return data;
+      // Cache data in localStorage
+      localStorage.setItem(cacheKey, data);
+      return { tabIndex, data };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message || error.toString());
     }
   }
 );
 
+// Slice definition
 const tabSlice = createSlice({
   name: 'tabs',
   initialState,
-  reducers: {
-    reset: (state) => {
-      state.loading = false;
-      state.getTextStatus = 'idle';
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getText.pending, (state) => {
@@ -45,9 +51,10 @@ const tabSlice = createSlice({
         state.getTextStatus = 'loading';
       })
       .addCase(getText.fulfilled, (state, action) => {
+        const { tabIndex, data } = action.payload;
         state.loading = false;
         state.getTextStatus = 'succeeded';
-        state.text = action.payload;
+        state.textData[tabIndex] = data; // Store fetched text data
       })
       .addCase(getText.rejected, (state) => {
         state.loading = false;
@@ -55,7 +62,5 @@ const tabSlice = createSlice({
       });
   },
 });
-
-export const { reset } = tabSlice.actions;
 
 export default tabSlice.reducer;
