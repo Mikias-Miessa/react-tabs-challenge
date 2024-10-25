@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getText } from '../state/tabSlice';
+import { ThreeDots } from 'react-loader-spinner';
 
 const Tabs = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState(1);
   const textData = useSelector((state) => state.tabs.textData);
-
+  const loading = useSelector((state) => state.tabs.loading);
   const handleTabClick = (tabIndex) => {
     setActiveTab(tabIndex);
   };
@@ -36,7 +37,7 @@ const Tabs = () => {
       </div>
 
       {/* Tab content */}
-      {textData[activeTab] !== null ? (
+      {textData[activeTab] !== null && !loading ? (
         <div className='p-4 bg-white'>
           <div className='max-w-full md:max-w-4xl mx-auto flex-col flex gap-6 my-4 px-4'>
             <h2 className='text-xl font-bold'>Title {activeTab}</h2>
@@ -47,9 +48,16 @@ const Tabs = () => {
           </div>
         </div>
       ) : (
-        <div className='p-4 bg-white h-[300px]'>
+        <div className='p-4 bg-white h-[200px]'>
           <div className='max-w-full md:max-w-4xl mx-auto flex-col items-center justify-center flex gap-6 my-4 px-4'>
-            <h1>Loading...</h1>
+            <ThreeDots
+              visible={true}
+              height='80'
+              width='80'
+              color='#000000'
+              radius='9'
+              ariaLabel='three-dots-loading'
+            />
           </div>
         </div>
       )}
